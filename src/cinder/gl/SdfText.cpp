@@ -2271,6 +2271,38 @@ void SdfText::drawStringWrapped( const std::string &str, const Rectf &fitRect, c
 	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() + offset, options );
 }
 
+//! CW
+std::vector<std::string> SdfText::calculateLineBreaks(const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options) {
+	SdfTextBox tbox = SdfTextBox(this).text(str).size((int)fitRect.getWidth(), (int)fitRect.getHeight()).ligate(options.getLigate()).tracking(options.getTracking());
+	SdfText::Font::GlyphMeasuresList glyphMeasures = tbox.measureGlyphs(options);
+
+	std::vector<int> indices;
+	int lastGlyph = -1;
+	for (int i = 0; i < glyphMeasures.size(); i++) {
+		auto glyph = glyphMeasures[i];
+		if ((int)glyph.second.y != lastGlyph) {
+			indices.push_back(i);
+		}
+		lastGlyph = glyph.second.y;
+	}
+	indices.push_back(str.size());
+
+	// split strings
+	std::vector<std::string> strs;
+	if (indices.size() == 1) {
+		strs.emplace_back(str);
+	}else {
+		for (int i = 1; i < indices.size(); i++) {
+			int start = indices[i - 1];
+			int end = indices[i];
+			auto s = str.substr(start, end - start);
+			strs.emplace_back(s);
+		}
+	}
+
+	return strs;
+}
+
 std::vector<std::pair<uint8_t, std::vector<SdfText::CharPlacement>>> SdfText::placeChars( const SdfText::Font::GlyphMeasuresList &glyphMeasures, const vec2 &baselineIn, const DrawOptions &options )
 {
 	std::vector<std::pair<uint8_t, std::vector<SdfText::CharPlacement>>> result;

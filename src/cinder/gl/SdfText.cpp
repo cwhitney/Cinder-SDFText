@@ -2274,6 +2274,7 @@ void SdfText::drawStringWrapped( const std::string &str, const Rectf &fitRect, c
 //! CW
 std::vector<std::string> SdfText::calculateLineBreaks(const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options) {
 	SdfTextBox tbox = SdfTextBox(this).text(str).size((int)fitRect.getWidth(), (int)fitRect.getHeight()).ligate(options.getLigate()).tracking(options.getTracking());
+/*
 	SdfText::Font::GlyphMeasuresList glyphMeasures = tbox.measureGlyphs(options);
 
 	std::vector<int> indices;
@@ -2299,8 +2300,10 @@ std::vector<std::string> SdfText::calculateLineBreaks(const std::string &str, co
 			strs.emplace_back(s);
 		}
 	}
+*/
+	return tbox.calculateLineBreaks();
 
-	return strs;
+	//return strs;
 }
 
 std::vector<std::pair<uint8_t, std::vector<SdfText::CharPlacement>>> SdfText::placeChars( const SdfText::Font::GlyphMeasuresList &glyphMeasures, const vec2 &baselineIn, const DrawOptions &options )
